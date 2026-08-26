@@ -1,60 +1,65 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MCM — Vila Aurora</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCM — Vila Aurora</title><link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main id="app">
-    <section id="start" class="screen active">
-      <div class="hero">
-        <div class="badge">MCM I • 1º período</div>
-        <h1>Vila Aurora</h1>
-        <p class="subtitle">Uma jornada pela comunidade, pela ciência e pelo cuidado.</p>
-        <div class="town-preview" aria-hidden="true">
-          <div>🎓<span>Faculdade</span></div><div>🏫<span>Escola</span></div>
-          <div class="locked">📚<span>Biblioteca 🔒</span></div><div>🏥<span>UBS</span></div>
-        </div>
-        <button class="primary" onclick="startGame()">Iniciar jornada</button>
-      </div>
-    </section>
+<main id="app">
+<section id="start" class="screen active">
+ <div class="title-card pixel-panel">
+  <div class="eyebrow">MÉTODOS CIENTÍFICOS EM MEDICINA</div>
+  <h1>VILA AURORA</h1><div class="title-icons">🏘️　🌳　🏥</div>
+  <p>Uma jornada pela comunidade, pela ciência e pelo cuidado.</p>
+  <button class="pixel-btn gold" onclick="startGame()">INICIAR JORNADA</button>
+  <small>Capítulo 1 • Primeiros passos na comunidade</small>
+ </div>
+</section>
 
-    <section id="map" class="screen">
-      <header><div><strong>Vila Aurora</strong><small id="missionTop">Primeira atividade na comunidade</small></div><div class="xp">⭐ <span id="xp">0</span> XP</div></header>
-      <div class="map">
-        <button class="place faculty" onclick="goFaculty()">🎓<b>Faculdade</b></button>
-        <button class="place school" id="schoolBtn" onclick="goSchool()">🏫<b>Escola Municipal</b><i id="schoolMark">!</i></button>
-        <button class="place library locked" disabled>📚<b>Biblioteca</b><small>🔒</small></button>
-        <button class="place hospital locked" disabled>🏥<b>Hospital</b><small>🔒</small></button>
-        <button class="place ubs" id="ubsBtn" disabled onclick="finishPrototype()">🏥<b>UBS Vila Aurora</b><small id="ubsLock">🔒</small></button>
-        <div class="fountain">⛲<span>Praça</span></div>
-        <div class="player">🧑‍⚕️<span>Você</span></div>
-      </div>
-      <div class="hint" id="mapHint">Clique na Escola Municipal para iniciar a visita.</div>
-    </section>
+<section id="map" class="screen">
+ <nav class="hud">
+  <div><b>🏘️ VILA AURORA</b><small id="missionTop">Primeira atividade na comunidade</small></div>
+  <div class="hud-actions"><button onclick="openJournal()">📖 Caderno</button><span>⭐ <b id="xp">0</b> XP</span></div>
+ </nav>
+ <div class="world">
+  <div class="road road-h"></div><div class="road road-v"></div>
+  <div class="trees t1">🌲🌳🌲</div><div class="trees t2">🌳🌲</div><div class="trees t3">🌲🌳🌳</div>
+  <button class="building college" onclick="goFaculty()"><span class="roof">🎓</span><b>FACULDADE</b></button>
+  <button class="building school" id="schoolBtn" onclick="goSchool()"><span class="quest" id="schoolMark">!</span><span class="roof">🏫</span><b>ESCOLA MUNICIPAL</b></button>
+  <button class="building library locked" disabled><span class="roof">📚</span><b>BIBLIOTECA</b><i>🔒</i></button>
+  <button class="building hospital locked" disabled><span class="roof">🏥</span><b>HOSPITAL</b><i>🔒</i></button>
+  <button class="building ubs locked" id="ubsBtn" disabled onclick="finishPrototype()"><span class="roof">🏥</span><b>UBS VILA AURORA</b><i id="ubsLock">🔒</i></button>
+  <div class="plaza"><span>⛲</span><b>PRAÇA</b></div>
+  <div class="player" id="player">🧑‍⚕️<small>VOCÊ</small></div>
+ </div>
+ <div class="mission-bar">📍 <span id="mapHint">Visite a Escola Municipal para conhecer a comunidade.</span></div>
+</section>
 
-    <section id="scene" class="screen">
-      <header><button class="back" onclick="show('map')">← Mapa</button><div class="xp">⭐ <span class="xpMirror">0</span> XP</div></header>
-      <div class="scene school-room">
-        <div class="blackboard">ESCOLA MUNICIPAL<br><small>VILA AURORA</small></div>
-        <div id="npcs" class="npcs"></div>
-        <div class="dialog" id="dialog"></div>
-      </div>
-    </section>
+<section id="scene" class="screen">
+ <nav class="hud"><button class="navbtn" onclick="show('map')">← MAPA</button><b>🏫 ESCOLA MUNICIPAL VILA AURORA</b><span>⭐ <b class="xpMirror">0</b> XP</span></nav>
+ <div class="school-scene">
+  <div class="wall-decor"><div class="board">BEM-VINDOS À<br><strong>ESCOLA VILA AURORA</strong></div><div class="poster">📚<br>LER É<br>DESCOBRIR</div><div class="poster">🧼<br>SAÚDE<br>NA ESCOLA</div></div>
+  <div class="furniture"><span>🪴</span><span>🪑</span><span>🪑</span><span>📚</span></div>
+  <div id="npcs" class="npcs"></div>
+  <div id="dialog" class="dialog pixel-panel"></div>
+ </div>
+</section>
 
-    <section id="end" class="screen">
-      <div class="hero">
-        <div class="badge">PROTÓTIPO 0.1 CONCLUÍDO</div>
-        <h1>Um novo caminho se abriu</h1>
-        <p>Você ouviu a comunidade escolar e identificou uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p>
-        <div class="unlock">🏥<strong>UBS Vila Aurora desbloqueada</strong><span>Próxima etapa: conhecer a perspectiva da equipe de saúde.</span></div>
-        <p class="score">⭐ <span id="finalXp"></span> XP &nbsp; • &nbsp; 🧠 Escuta Crítica</p>
-        <button class="primary" onclick="restart()">Jogar novamente</button>
-      </div>
-    </section>
-  </main>
-  <script src="js/game.js"></script>
-</body>
-</html>
+<div id="journal" class="modal hidden">
+ <div class="journal pixel-panel"><button class="close" onclick="closeJournal()">×</button>
+ <h2>📖 CADERNO DE CAMPO</h2><p class="muted">Registros da sua jornada em Vila Aurora</p>
+ <div id="journalEntries"><p>Você ainda não registrou nenhuma observação.</p></div></div>
+</div>
+
+<section id="end" class="screen">
+ <div class="title-card pixel-panel">
+  <div class="eyebrow">MISSÃO ATUALIZADA</div><h1>NOVO LOCAL DESBLOQUEADO</h1>
+  <div class="big-icon">🏥</div><h2>UBS VILA AURORA</h2>
+  <p>Você ouviu a comunidade escolar e reconheceu uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p>
+  <div class="skill">🧠 <b>HABILIDADE: ESCUTA CRÍTICA</b><small>Diferenciar o que foi relatado das explicações que ainda precisam ser investigadas.</small></div>
+  <p>⭐ <span id="finalXp"></span> XP</p>
+  <button class="pixel-btn gold" onclick="restart()">JOGAR NOVAMENTE</button>
+ </div>
+</section>
+</main><script src="js/game.js"></script>
+</body></html>
