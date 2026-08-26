@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MCM — Vila Aurora</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="app">
+    <section id="start" class="screen active">
+      <div class="hero">
+        <div class="badge">MCM I • 1º período</div>
+        <h1>Vila Aurora</h1>
+        <p class="subtitle">Uma jornada pela comunidade, pela ciência e pelo cuidado.</p>
+        <div class="town-preview" aria-hidden="true">
+          <div>🎓<span>Faculdade</span></div><div>🏫<span>Escola</span></div>
+          <div class="locked">📚<span>Biblioteca 🔒</span></div><div>🏥<span>UBS</span></div>
+        </div>
+        <button class="primary" onclick="startGame()">Iniciar jornada</button>
+      </div>
+    </section>
+
+    <section id="map" class="screen">
+      <header><div><strong>Vila Aurora</strong><small id="missionTop">Primeira atividade na comunidade</small></div><div class="xp">⭐ <span id="xp">0</span> XP</div></header>
+      <div class="map">
+        <button class="place faculty" onclick="goFaculty()">🎓<b>Faculdade</b></button>
+        <button class="place school" id="schoolBtn" onclick="goSchool()">🏫<b>Escola Municipal</b><i id="schoolMark">!</i></button>
+        <button class="place library locked" disabled>📚<b>Biblioteca</b><small>🔒</small></button>
+        <button class="place hospital locked" disabled>🏥<b>Hospital</b><small>🔒</small></button>
+        <button class="place ubs" id="ubsBtn" disabled onclick="finishPrototype()">🏥<b>UBS Vila Aurora</b><small id="ubsLock">🔒</small></button>
+        <div class="fountain">⛲<span>Praça</span></div>
+        <div class="player">🧑‍⚕️<span>Você</span></div>
+      </div>
+      <div class="hint" id="mapHint">Clique na Escola Municipal para iniciar a visita.</div>
+    </section>
+
+    <section id="scene" class="screen">
+      <header><button class="back" onclick="show('map')">← Mapa</button><div class="xp">⭐ <span class="xpMirror">0</span> XP</div></header>
+      <div class="scene school-room">
+        <div class="blackboard">ESCOLA MUNICIPAL<br><small>VILA AURORA</small></div>
+        <div id="npcs" class="npcs"></div>
+        <div class="dialog" id="dialog"></div>
+      </div>
+    </section>
+
+    <section id="end" class="screen">
+      <div class="hero">
+        <div class="badge">PROTÓTIPO 0.1 CONCLUÍDO</div>
+        <h1>Um novo caminho se abriu</h1>
+        <p>Você ouviu a comunidade escolar e identificou uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p>
+        <div class="unlock">🏥<strong>UBS Vila Aurora desbloqueada</strong><span>Próxima etapa: conhecer a perspectiva da equipe de saúde.</span></div>
+        <p class="score">⭐ <span id="finalXp"></span> XP &nbsp; • &nbsp; 🧠 Escuta Crítica</p>
+        <button class="primary" onclick="restart()">Jogar novamente</button>
+      </div>
+    </section>
+  </main>
+  <script src="js/game.js"></script>
+</body>
+</html>
