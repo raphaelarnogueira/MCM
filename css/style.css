@@ -1,6 +1,14 @@
 *{box-sizing:border-box}body{margin:0;background:#15150f;color:#2b2419;font-family:"Courier New",monospace}.screen{display:none;min-height:100vh}.screen.active{display:block}
 #start,#end{background:linear-gradient(#87c9d2 0 48%,#719e59 48%);align-items:center;justify-content:center;padding:24px}#start.active,#end.active{display:flex}
-.start-card{width:min(720px,94vw);background:#f8e7b6;border:5px solid #392a1d;box-shadow:9px 9px #233126;text-align:center;padding:32px}.start-card h1{font-size:clamp(42px,8vw,76px);margin:8px;color:#315b40;text-shadow:3px 3px #d5bb73}.kicker{font-weight:900;letter-spacing:2px}.start-card button,.dialog button,header button,.top-actions button{font:inherit;background:#f0c650;border:3px solid #3c2b1d;box-shadow:3px 3px #3c2b1d;padding:10px 15px;cursor:pointer;font-weight:bold}.start-card small,.skill small{display:block;margin-top:15px}
+.start-card small{
+    display:block;
+    margin-top:32px;
+}
+
+.skill small{
+    display:block;
+    margin-top:15px;
+};background:#f8e7b6;border:5px solid #392a1d;box-shadow:9px 9px #233126;text-align:center;padding:32px}.start-card h1{font-size:clamp(42px,8vw,76px);margin:8px;color:#315b40;text-shadow:3px 3px #d5bb73}.kicker{font-weight:900;letter-spacing:2px}.start-card button,.dialog button,header button,.top-actions button{font:inherit;background:#f0c650;border:3px solid #3c2b1d;box-shadow:3px 3px #3c2b1d;padding:10px 15px;cursor:pointer;font-weight:bold}.start-card small,.skill small{display:block;margin-top:15px}
 .game-map{position:relative;width:100vw;height:100vh;overflow:hidden;background:#314b31}.game-map>img{width:100%;height:100%;object-fit:cover;display:block;image-rendering:auto}
 .overlay-top{position:absolute;z-index:5;top:0;left:0;right:0;min-height:68px;background:#17140feF;color:#f7e3a3;border-bottom:4px solid #5c4328;display:flex;justify-content:space-between;align-items:center;padding:9px 22px}.overlay-top small{display:block;color:#f4d879}.top-actions{display:flex;gap:14px;align-items:center}.top-actions button{background:#33271d;color:#fff0bc;box-shadow:none}
 .objective{position:absolute;z-index:5;left:18px;bottom:18px;width:min(330px,40vw);background:#181510ef;color:#fff0bd;border:4px solid #6d4d2d;border-radius:8px;padding:14px;box-shadow:4px 4px #111}.objective b,.objective span{display:block}.objective span{margin-top:8px;line-height:1.35}
