@@ -1,65 +1,27 @@
 <!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MCM — Vila Aurora</title><link rel="stylesheet" href="css/style.css">
-</head>
-<body>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MCM — Vila Aurora</title><link rel="stylesheet" href="css/style.css"></head><body>
 <main id="app">
-<section id="start" class="screen active">
- <div class="title-card pixel-panel">
-  <div class="eyebrow">MÉTODOS CIENTÍFICOS EM MEDICINA</div>
-  <h1>VILA AURORA</h1><div class="title-icons">🏘️　🌳　🏥</div>
-  <p>Uma jornada pela comunidade, pela ciência e pelo cuidado.</p>
-  <button class="pixel-btn gold" onclick="startGame()">INICIAR JORNADA</button>
-  <small>Capítulo 1 • Primeiros passos na comunidade</small>
- </div>
-</section>
+<section id="start" class="screen active"><div class="title-card pixel-panel"><div class="eyebrow">MÉTODOS CIENTÍFICOS EM MEDICINA</div><h1>VILA AURORA</h1><div class="title-icons">🏘️ 🌳 🏥</div><p>Uma jornada pela comunidade, pela ciência e pelo cuidado.</p><button class="pixel-btn gold" onclick="startGame()">INICIAR JORNADA</button><small>Capítulo 1 • Primeiros passos na comunidade</small></div></section>
 
 <section id="map" class="screen">
- <nav class="hud">
-  <div><b>🏘️ VILA AURORA</b><small id="missionTop">Primeira atividade na comunidade</small></div>
-  <div class="hud-actions"><button onclick="openJournal()">📖 Caderno</button><span>⭐ <b id="xp">0</b> XP</span></div>
- </nav>
- <div class="world">
-  <div class="road road-h"></div><div class="road road-v"></div>
-  <div class="trees t1">🌲🌳🌲</div><div class="trees t2">🌳🌲</div><div class="trees t3">🌲🌳🌳</div>
-  <button class="building college" onclick="goFaculty()"><span class="roof">🎓</span><b>FACULDADE</b></button>
-  <button class="building school" id="schoolBtn" onclick="goSchool()"><span class="quest" id="schoolMark">!</span><span class="roof">🏫</span><b>ESCOLA MUNICIPAL</b></button>
-  <button class="building library locked" disabled><span class="roof">📚</span><b>BIBLIOTECA</b><i>🔒</i></button>
-  <button class="building hospital locked" disabled><span class="roof">🏥</span><b>HOSPITAL</b><i>🔒</i></button>
-  <button class="building ubs locked" id="ubsBtn" disabled onclick="finishPrototype()"><span class="roof">🏥</span><b>UBS VILA AURORA</b><i id="ubsLock">🔒</i></button>
-  <div class="plaza"><span>⛲</span><b>PRAÇA</b></div>
-  <div class="player" id="player">🧑‍⚕️<small>VOCÊ</small></div>
- </div>
- <div class="mission-bar">📍 <span id="mapHint">Visite a Escola Municipal para conhecer a comunidade.</span></div>
+<nav class="hud"><div><b>🏘️ VILA AURORA</b><small id="missionTop">Primeira atividade na comunidade</small></div><div class="hud-actions"><button onclick="openJournal()">📖 Caderno</button><span>⭐ <b id="xp">0</b> XP</span></div></nav>
+<div class="world">
+ <div class="road horizontal"></div><div class="road vertical"></div><div class="crosswalk cw1"></div><div class="crosswalk cw2"></div>
+ <div class="house h1">🏠</div><div class="house h2">🏡</div><div class="house h3">🏠</div><div class="house h4">🏡</div>
+ <div class="treegrove g1">🌳🌲🌳</div><div class="treegrove g2">🌲🌳</div><div class="treegrove g3">🌳🌳🌲</div>
+ <div class="lamp l1">💡</div><div class="lamp l2">💡</div><div class="bench b1">🪑</div><div class="bench b2">🪑</div>
+ <button class="building college" onclick="goFaculty()"><div class="building-art"><div class="sign">FACULDADE DE MEDICINA</div><div class="roofshape">🎓</div><div class="facade">▦　🚪　▦</div></div></button>
+ <button class="building school" id="schoolBtn" onclick="goSchool()"><span class="quest" id="schoolMark">!</span><div class="building-art schoolart"><div class="sign">ESCOLA MUNICIPAL</div><div class="roofshape">🏫</div><div class="yard">🌼　🚪　🌼</div></div></button>
+ <button class="building library locked" disabled><div class="building-art"><div class="sign">BIBLIOTECA</div><div class="roofshape">📚</div><div class="facade">▦　🚪　▦</div></div><i>🔒</i></button>
+ <button class="building ubs locked" id="ubsBtn" disabled onclick="finishPrototype()"><div class="building-art health"><div class="sign">UBS VILA AURORA</div><div class="roofshape">✚</div><div class="facade">▦　🚪　▦</div></div><i id="ubsLock">🔒</i></button>
+ <button class="building hospital locked" disabled><div class="building-art health"><div class="sign">HOSPITAL</div><div class="roofshape">✚</div><div class="facade">▦ ▦　🚪　▦ ▦</div></div><i>🔒</i></button>
+ <div class="plaza"><div class="flower">🌷　🌼　🌷</div><div class="fountain">⛲</div><div class="plaza-label">PRAÇA CENTRAL</div></div>
+ <div class="player" id="player">🧑‍⚕️</div>
+</div><div class="mission-bar">📍 <span id="mapHint">Visite a Escola Municipal para conhecer a comunidade.</span></div>
 </section>
 
-<section id="scene" class="screen">
- <nav class="hud"><button class="navbtn" onclick="show('map')">← MAPA</button><b>🏫 ESCOLA MUNICIPAL VILA AURORA</b><span>⭐ <b class="xpMirror">0</b> XP</span></nav>
- <div class="school-scene">
-  <div class="wall-decor"><div class="board">BEM-VINDOS À<br><strong>ESCOLA VILA AURORA</strong></div><div class="poster">📚<br>LER É<br>DESCOBRIR</div><div class="poster">🧼<br>SAÚDE<br>NA ESCOLA</div></div>
-  <div class="furniture"><span>🪴</span><span>🪑</span><span>🪑</span><span>📚</span></div>
-  <div id="npcs" class="npcs"></div>
-  <div id="dialog" class="dialog pixel-panel"></div>
- </div>
-</section>
-
-<div id="journal" class="modal hidden">
- <div class="journal pixel-panel"><button class="close" onclick="closeJournal()">×</button>
- <h2>📖 CADERNO DE CAMPO</h2><p class="muted">Registros da sua jornada em Vila Aurora</p>
- <div id="journalEntries"><p>Você ainda não registrou nenhuma observação.</p></div></div>
-</div>
-
-<section id="end" class="screen">
- <div class="title-card pixel-panel">
-  <div class="eyebrow">MISSÃO ATUALIZADA</div><h1>NOVO LOCAL DESBLOQUEADO</h1>
-  <div class="big-icon">🏥</div><h2>UBS VILA AURORA</h2>
-  <p>Você ouviu a comunidade escolar e reconheceu uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p>
-  <div class="skill">🧠 <b>HABILIDADE: ESCUTA CRÍTICA</b><small>Diferenciar o que foi relatado das explicações que ainda precisam ser investigadas.</small></div>
-  <p>⭐ <span id="finalXp"></span> XP</p>
-  <button class="pixel-btn gold" onclick="restart()">JOGAR NOVAMENTE</button>
- </div>
-</section>
-</main><script src="js/game.js"></script>
-</body></html>
+<section id="scene" class="screen"><nav class="hud"><button class="navbtn" onclick="show('map')">← MAPA</button><b>🏫 ESCOLA MUNICIPAL VILA AURORA</b><span>⭐ <b class="xpMirror">0</b> XP</span></nav><div class="school-scene"><div class="wall-decor"><div class="board">BEM-VINDOS À<br><strong>ESCOLA VILA AURORA</strong></div><div class="poster">📚<br>LER É<br>DESCOBRIR</div><div class="poster">🧼<br>SAÚDE<br>NA ESCOLA</div></div><div class="furniture"><span>🪴</span><span>🪑</span><span>🪑</span><span>📚</span></div><div id="npcs" class="npcs"></div><div id="dialog" class="dialog pixel-panel"></div></div></section>
+<div id="journal" class="modal hidden"><div class="journal pixel-panel"><button class="close" onclick="closeJournal()">×</button><h2>📖 CADERNO DE CAMPO</h2><p class="muted">Registros da sua jornada em Vila Aurora</p><div id="journalEntries"><p>Você ainda não registrou nenhuma observação.</p></div></div></div>
+<section id="end" class="screen"><div class="title-card pixel-panel"><div class="eyebrow">MISSÃO ATUALIZADA</div><h1>NOVO LOCAL DESBLOQUEADO</h1><div class="big-icon">🏥</div><h2>UBS VILA AURORA</h2><p>Você ouviu a comunidade escolar e reconheceu uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p><div class="skill">🧠 <b>HABILIDADE: ESCUTA CRÍTICA</b><small>Diferenciar o que foi relatado das explicações que ainda precisam ser investigadas.</small></div><p>⭐ <span id="finalXp"></span> XP</p><button class="pixel-btn gold" onclick="restart()">JOGAR NOVAMENTE</button></div></section>
+</main><script src="js/game.js"></script></body></html>
