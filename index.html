@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MCM — Vila Aurora | Capítulo 1</title>
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=12">
 </head>
 <body>
 <main>
@@ -66,13 +66,27 @@
 <div id="journal" class="modal hidden">
  <div class="journal">
   <button class="close" onclick="closeJournal()">×</button>
+
   <h2>📖 CADERNO DE CAMPO</h2>
+
   <div class="tabs">
     <button onclick="journalTab='registros';renderJournal()">Registros</button>
     <button onclick="journalTab='projeto';renderJournal()">Projeto</button>
     <button onclick="journalTab='insights';renderJournal()">💡 Insights</button>
   </div>
+
   <div id="journalEntries"></div>
+
+  <div class="journal-reset">
+    <button class="danger" onclick="resetGame()">
+      ↻ REINICIAR JOGO
+    </button>
+
+    <small>
+      Apaga o progresso salvo neste navegador e reinicia o capítulo.
+    </small>
+  </div>
+
  </div>
 </div>
 
@@ -92,3 +106,20 @@
 </main>
 <script src="js/game.js?v=16"></script>
 </body></html>
+.journal-reset{
+    margin-top:24px;
+    padding-top:18px;
+    border-top:2px dashed #a98755;
+    text-align:center;
+}
+
+.journal-reset .danger{
+    background:#e8a39a!important;
+}
+
+.journal-reset small{
+    display:block;
+    margin-top:10px;
+    line-height:1.4;
+    color:#65513a;
+}
