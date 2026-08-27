@@ -159,30 +159,754 @@ function extensionWorkshop(){
 function conceptBlocks(){
  $("workContent").innerHTML=`<div class="work-card"><h2>1. Organize os conceitos</h2><p>Para este teste, trabalharemos com três blocos conceituais:</p><div class="project-grid"><div class="project-box"><b>VACINAÇÃO</b><p>vaccination<br>immunization</p></div><div class="project-box"><b>EDUCAÇÃO</b><p>"health education"<br>"educational intervention"</p></div><div class="project-box"><b>POPULAÇÃO</b><p>child<br>children</p></div></div><p>Observe que expressões compostas aparecem entre <b>aspas duplas</b>. Na próxima etapa, você também deverá inserir operadores e parênteses.</p><button onclick="searchBuilder()">MONTAR ESTRATÉGIA →</button></div>`;
 }
-const correctSearch=['(','vaccination','OR','immunization',')','AND','(','"health education"','OR','"educational intervention"',')','AND','(','child','OR','children',')'];
-const availableTokens=['(',')','vaccination','immunization','"health education"','"educational intervention"','child','children','AND','OR'];
+const availableTokens=[
+  '(',
+  ')',
+  'vaccination',
+  'immunization',
+  '"health education"',
+  '"educational intervention"',
+  'child',
+  'children',
+  'AND',
+  'OR'
+];
+
 function searchBuilder(){
- $("workContent").innerHTML=`<div class="work-card"><h2>2. Monte a estratégia de busca</h2><p>Clique nos cartões na ordem desejada. Você deve organizar também <b>aspas, operadores e parênteses</b>.</p><div class="search-builder">${availableTokens.map((t,i)=>`<button class="token ${t==="AND"||t==="OR"?"operator":t==="("||t===")"?"paren":""}" onclick='addToken(${JSON.stringify(t)})'>${t}</button>`).join("")}</div><div class="search-line" id="searchLine">${state.searchTokens.join(" ")||"Sua estratégia aparecerá aqui..."}</div><div class="row-actions"><button onclick="removeToken()">← REMOVER ÚLTIMO</button><button onclick="clearSearch()">LIMPAR</button><button onclick="testSearch()">🔎 TESTAR ESTRATÉGIA</button></div><div id="searchFeedback"></div></div>`;
+  $("workContent").innerHTML=`
+    <div class="work-card">
+      <h2>2. Monte a estratégia de busca</h2>
+
+      <p>
+        Clique nos cartões na ordem desejada.
+        Você deve organizar também <b>operadores e parênteses</b>.
+        As expressões compostas já aparecem entre aspas duplas.
+      </p>
+
+      <div class="search-builder">
+        ${availableTokens.map((t,i)=>`
+          <button
+            class="token ${
+              t==="AND"||t==="OR"
+                ?"operator"
+                :t==="("||t===")"
+                ?"paren"
+                :""
+            }"
+            onclick='addToken(${JSON.stringify(t)})'>
+            ${t}
+          </button>
+        `).join("")}
+      </div>
+
+      <div class="search-line" id="searchLine">
+        ${state.searchTokens.join(" ")||"Sua estratégia aparecerá aqui..."}
+      </div>
+
+      <div class="row-actions">
+        <button onclick="removeToken()">← REMOVER ÚLTIMO</button>
+        <button onclick="clearSearch()">LIMPAR</button>
+        <button onclick="testSearch()">🔎 TESTAR ESTRATÉGIA</button>
+      </div>
+
+      <div id="searchFeedback"></div>
+    </div>`;
 }
-function addToken(t){state.searchTokens.push(t);event("search_token",{token:t});searchBuilder()}
-function removeToken(){state.searchTokens.pop();event("search_edit",{action:"remove"});searchBuilder()}
-function clearSearch(){state.searchTokens=[];event("search_edit",{action:"clear"});searchBuilder()}
+
+function addToken(t){
+  state.searchTokens.push(t);
+  event("search_token",{token:t});
+  searchBuilder();
+}
+
+function removeToken(){
+  state.searchTokens.pop();
+  event("search_edit",{action:"remove"});
+  searchBuilder();
+}
+
+function clearSearch(){
+  state.searchTokens=[];
+  event("search_edit",{action:"clear"});
+  searchBuilder();
+}
+
+
+/* =========================================================
+   VALIDAÇÃO LÓGICA DA ESTRATÉGIA
+   ========================================================= */
+
+function normalizeSearch(tokens){
+  return tokens
+    .join(" ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+
+/* Verifica se um par de termos aparece corretamente
+   agrupado com OR, independentemente da ordem. */
+
+function validORBlock(tokens,a,b){
+
+  for(let i=0;i<=tokens.length-5;i++){
+
+    const part=tokens.slice(i,i+5);
+
+    const option1=
+      part[0]==="(" &&
+      part[1]===a &&
+      part[2]==="OR" &&
+      part[3]===b &&
+      part[4]===")";
+
+    const option2=
+      part[0]==="(" &&
+      part[1]===b &&
+      part[2]==="OR" &&
+      part[3]===a &&
+      part[4]===")";
+
+    if(option1 || option2) return true;
+  }
+
+  return false;
+}
+
+
+/* Detecta AND entre os dois termos de um mesmo conceito. */
+
+function hasANDInsideConcept(tokens,a,b){
+
+  for(let i=0;i<tokens.length-2;i++){
+
+    if(
+      (tokens[i]===a &&
+       tokens[i+1]==="AND" &&
+       tokens[i+2]===b)
+
+      ||
+
+      (tokens[i]===b &&
+       tokens[i+1]==="AND" &&
+       tokens[i+2]===a)
+    ){
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
+/* Verifica presença dos termos. */
+
+function hasAllTerms(tokens,terms){
+  return terms.every(t=>tokens.includes(t));
+}
+
+
+/* Extrai blocos completos do tipo:
+   ( termo OR termo )
+   e identifica a qual conceito pertencem. */
+
+function identifyBlocks(tokens){
+
+  const blocks=[];
+
+  for(let i=0;i<=tokens.length-5;i++){
+
+    const p=tokens.slice(i,i+5);
+
+    if(
+      p[0]==="(" &&
+      p[2]==="OR" &&
+      p[4]===")"
+    ){
+
+      const terms=[p[1],p[3]];
+
+      if(
+        terms.includes("vaccination") &&
+        terms.includes("immunization")
+      ){
+        blocks.push({
+          type:"vaccination",
+          start:i,
+          end:i+4
+        });
+      }
+
+      if(
+        terms.includes('"health education"') &&
+        terms.includes('"educational intervention"')
+      ){
+        blocks.push({
+          type:"education",
+          start:i,
+          end:i+4
+        });
+      }
+
+      if(
+        terms.includes("child") &&
+        terms.includes("children")
+      ){
+        blocks.push({
+          type:"population",
+          start:i,
+          end:i+4
+        });
+      }
+    }
+  }
+
+  return blocks;
+}
+
+
+/* Verifica se os três blocos completos estão ligados
+   exclusivamente por AND, independentemente da ordem. */
+
+function blocksConnectedByAND(tokens,blocks){
+
+  if(blocks.length!==3) return false;
+
+  const ordered=[...blocks].sort((a,b)=>a.start-b.start);
+
+  /* Não pode haver conteúdo antes ou depois
+     dos três blocos. */
+
+  if(ordered[0].start!==0) return false;
+  if(ordered[2].end!==tokens.length-1) return false;
+
+  /* Entre bloco 1 e 2 deve existir apenas AND. */
+  const between1=tokens.slice(
+    ordered[0].end+1,
+    ordered[1].start
+  );
+
+  /* Entre bloco 2 e 3 deve existir apenas AND. */
+  const between2=tokens.slice(
+    ordered[1].end+1,
+    ordered[2].start
+  );
+
+  return (
+    between1.length===1 &&
+    between1[0]==="AND" &&
+    between2.length===1 &&
+    between2[0]==="AND"
+  );
+}
+
+
+/* Verifica equilíbrio básico dos parênteses. */
+
+function parenthesesBalanced(tokens){
+
+  let level=0;
+
+  for(const t of tokens){
+
+    if(t==="(") level++;
+
+    if(t===")"){
+      level--;
+      if(level<0) return false;
+    }
+  }
+
+  return level===0;
+}
+
+
+/* =========================================================
+   TESTE DA ESTRATÉGIA
+   ========================================================= */
+
 function testSearch(){
- state.searchAttempts++;let s=state.searchTokens.join(" ");event("search_attempt",{strategy:s,attempt:state.searchAttempts});
- let html="";
- if(JSON.stringify(state.searchTokens)===JSON.stringify(correctSearch)){
-  html=`<div class="feedback good"><h3>✓ RAIO-X DA BUSCA</h3><p><b>(vaccination OR immunization)</b> — o OR reúne formas alternativas de representar vacinação.</p><p><b>("health education" OR "educational intervention")</b> — as aspas marcam expressões compostas; o OR reúne alternativas do mesmo conceito.</p><p><b>(child OR children)</b> — formas alternativas relacionadas à população.</p><p><b>AND entre os blocos</b> — solicita a presença dos diferentes conceitos.</p><p><b>Parênteses</b> — tornam explícito o agrupamento pretendido.</p><p>A instrução pode ser lida como: recuperar registros sobre <b>vacinação E educação E crianças</b>, aceitando termos alternativos dentro de cada bloco.</p><button onclick="searchResults()">VER RESULTADOS SIMULADOS →</button></div>`;
-  award(15,"estratégia de busca");
- } else if(!s.includes("(")||!s.includes(")")){
-  html=`<div class="feedback"><h3>⚠️ COMO A BASE PODE INTERPRETAR</h3><p>Sem parênteses, os sinônimos podem deixar de formar os três blocos que você pretendia. Dependendo das regras de precedência da base, partes da expressão podem ser processadas separadamente.</p><div class="search-line">vaccination<br>OU<br>immunization AND "health education"<br>OU<br>"educational intervention" AND child<br>OU<br>children</div><p>Isso pode recuperar registros contendo apenas <b>vaccination</b> ou apenas <b>children</b>, sem representar simultaneamente vacinação, educação e crianças. A sintaxe e a precedência variam entre bases; os parênteses ajudam a explicitar o agrupamento desejado.</p></div>`;
- } else if(s.includes("vaccination AND immunization")||s.includes('"health education" AND "educational intervention"')||s.includes("child AND children")){
-  html=`<div class="feedback"><h3>⚠️ AND ENTRE SINÔNIMOS</h3><p>Você está exigindo que formas alternativas apareçam simultaneamente. Um artigo que use <b>vaccination</b>, mas não <b>immunization</b>, poderá deixar de ser recuperado.</p><div class="paper"><b>Educational strategies to improve childhood vaccination</b><br>vaccination ✓ &nbsp; immunization ✗<br><strong>Resultado:</strong> potencialmente relevante, mas perdido se ambos forem obrigatórios.</div><p>Dentro de um mesmo conceito, pense em qual operador permite recuperar uma alternativa <b>ou</b> outra.</p></div>`;
- } else if(s.includes("health education") && !s.includes('"health education"')){
-  html=`<div class="feedback"><h3>⚠️ EXPRESSÃO SEM ASPAS</h3><p>Sem aspas, <b>health</b> e <b>education</b> podem não ser tratados como a expressão que você pretendia, conforme a sintaxe da base. Um registro poderia conter os dois termos em contextos diferentes.</p><p>Use <b>"health education"</b> quando quiser representar a expressão, lembrando que o comportamento das aspas deve ser conferido em cada base.</p></div>`;
- } else {
-  html=`<div class="feedback info"><h3>🔎 RAIO-X PARCIAL</h3><p>A estratégia ainda não representa claramente três blocos: <b>vacinação</b>, <b>educação</b> e <b>crianças</b>. Agrupe alternativas do mesmo conceito com OR e conecte conceitos diferentes com AND.</p><p>Estrutura esperada: <b>(sinônimo OR sinônimo) AND ("expressão" OR "expressão") AND (sinônimo OR sinônimo)</b>.</p></div>`;
- }
- $("searchFeedback").innerHTML=html;
+
+  state.searchAttempts++;
+
+  const tokens=state.searchTokens;
+  const strategy=normalizeSearch(tokens);
+
+  /* -------------------------------------------------------
+     DIMENSÃO 1 — TERMOS / CONCEITOS
+     ------------------------------------------------------- */
+
+  const vaccinationTerms=[
+    "vaccination",
+    "immunization"
+  ];
+
+  const educationTerms=[
+    '"health education"',
+    '"educational intervention"'
+  ];
+
+  const populationTerms=[
+    "child",
+    "children"
+  ];
+
+  const vaccinationComplete=
+    hasAllTerms(tokens,vaccinationTerms);
+
+  const educationComplete=
+    hasAllTerms(tokens,educationTerms);
+
+  const populationComplete=
+    hasAllTerms(tokens,populationTerms);
+
+  const conceptsComplete=
+    vaccinationComplete &&
+    educationComplete &&
+    populationComplete;
+
+
+  /* -------------------------------------------------------
+     DIMENSÃO 2 — OR DENTRO DOS BLOCOS
+     ------------------------------------------------------- */
+
+  const vaccinationOR=
+    validORBlock(
+      tokens,
+      "vaccination",
+      "immunization"
+    );
+
+  const educationOR=
+    validORBlock(
+      tokens,
+      '"health education"',
+      '"educational intervention"'
+    );
+
+  const populationOR=
+    validORBlock(
+      tokens,
+      "child",
+      "children"
+    );
+
+
+  /* -------------------------------------------------------
+     DIMENSÃO 3 — AND INADEQUADO ENTRE SINÔNIMOS
+     ------------------------------------------------------- */
+
+  const vaccinationAND=
+    hasANDInsideConcept(
+      tokens,
+      "vaccination",
+      "immunization"
+    );
+
+  const educationAND=
+    hasANDInsideConcept(
+      tokens,
+      '"health education"',
+      '"educational intervention"'
+    );
+
+  const populationAND=
+    hasANDInsideConcept(
+      tokens,
+      "child",
+      "children"
+    );
+
+
+  /* -------------------------------------------------------
+     DIMENSÃO 4 — PARÊNTESES
+     ------------------------------------------------------- */
+
+  const balanced=
+    parenthesesBalanced(tokens);
+
+  const hasParentheses=
+    tokens.includes("(") &&
+    tokens.includes(")");
+
+
+  /* -------------------------------------------------------
+     DIMENSÃO 5 — BLOCOS E AND ENTRE CONCEITOS
+     ------------------------------------------------------- */
+
+  const blocks=identifyBlocks(tokens);
+
+  const allBlocks=
+    vaccinationOR &&
+    educationOR &&
+    populationOR;
+
+  const correctConnections=
+    blocksConnectedByAND(tokens,blocks);
+
+
+  /* -------------------------------------------------------
+     RESULTADO FINAL
+     ------------------------------------------------------- */
+
+  const correct=
+    conceptsComplete &&
+    allBlocks &&
+    balanced &&
+    correctConnections;
+
+
+  /* Registra dados detalhados para análise futura. */
+
+  event("search_attempt",{
+    strategy:strategy,
+    attempt:state.searchAttempts,
+
+    validation:{
+      conceptsComplete,
+      vaccinationComplete,
+      educationComplete,
+      populationComplete,
+
+      vaccinationOR,
+      educationOR,
+      populationOR,
+
+      vaccinationAND,
+      educationAND,
+      populationAND,
+
+      hasParentheses,
+      parenthesesBalanced:balanced,
+
+      blocksConnectedByAND:correctConnections,
+
+      correct
+    }
+  });
+
+
+  /* =====================================================
+     MONTA O RAIO-X
+     ===================================================== */
+
+  let diagnostic=[];
+
+  diagnostic.push(
+    `<p><b>Conceitos:</b> ${
+      conceptsComplete
+      ?"✓ Os três conceitos estão representados."
+      :"⚠️ Um ou mais conceitos estão incompletos."
+    }</p>`
+  );
+
+  diagnostic.push(
+    `<p><b>Termos alternativos:</b> ${
+      conceptsComplete
+      ?"✓ Foram incluídas alternativas para os três conceitos."
+      :"⚠️ Verifique se cada conceito contém os termos propostos."
+    }</p>`
+  );
+
+  diagnostic.push(
+    `<p><b>Operadores dentro dos blocos:</b> ${
+      allBlocks
+      ?"✓ OR foi utilizado adequadamente entre os termos alternativos."
+      :"⚠️ Há problema na relação entre termos de um mesmo conceito."
+    }</p>`
+  );
+
+  diagnostic.push(
+    `<p><b>Relação entre os conceitos:</b> ${
+      correctConnections
+      ?"✓ Os três blocos estão relacionados por AND."
+      :"⚠️ Os conceitos ainda não estão corretamente relacionados."
+    }</p>`
+  );
+
+  diagnostic.push(
+    `<p><b>Agrupamento:</b> ${
+      allBlocks && balanced
+      ?"✓ Os parênteses delimitam os três blocos conceituais."
+      :"⚠️ Os blocos conceituais não estão adequadamente delimitados."
+    }</p>`
+  );
+
+  diagnostic.push(
+    `<p><b>Expressões compostas:</b> ✓ As expressões apresentadas nos cartões mantêm as aspas duplas.</p>`
+  );
+
+
+  let explanation="";
+
+
+  /* =====================================================
+     ERRO: AND ENTRE TERMOS ALTERNATIVOS
+     ===================================================== */
+
+  if(
+    vaccinationAND ||
+    educationAND ||
+    populationAND
+  ){
+
+    let blocksWrong=[];
+
+    if(vaccinationAND)
+      blocksWrong.push("VACINAÇÃO");
+
+    if(educationAND)
+      blocksWrong.push("EDUCAÇÃO");
+
+    if(populationAND)
+      blocksWrong.push("POPULAÇÃO");
+
+    explanation=`
+      <div class="feedback">
+
+        <h3>⚠️ AND ENTRE TERMOS DO MESMO CONCEITO</h3>
+
+        <p>
+          Observe ${
+            blocksWrong.length===1
+            ?"o bloco"
+            :"os blocos"
+          }:
+          <b>${blocksWrong.join(", ")}</b>.
+        </p>
+
+        <p>
+          Ao utilizar <b>AND</b> entre termos alternativos,
+          você solicita registros que atendam às duas condições.
+        </p>
+
+        <div class="paper">
+          <b>Exemplo</b><br>
+          Educational strategies to improve childhood vaccination<br><br>
+          vaccination ✓ &nbsp;&nbsp;
+          immunization ✗
+        </div>
+
+        <p>
+          Esse trabalho poderia ser relevante, mas poderá deixar
+          de ser recuperado se a estratégia exigir simultaneamente
+          <b>vaccination AND immunization</b>.
+        </p>
+
+        <p>
+          💡 <b>Reflita:</b> os termos representam conceitos que
+          precisam ocorrer simultaneamente ou maneiras alternativas
+          de representar um mesmo conceito?
+        </p>
+
+      </div>`;
+  }
+
+
+  /* =====================================================
+     ERRO: AUSÊNCIA / PROBLEMA DE PARÊNTESES
+     ===================================================== */
+
+  else if(
+    !hasParentheses ||
+    !balanced ||
+    !allBlocks
+  ){
+
+    explanation=`
+      <div class="feedback">
+
+        <h3>⚠️ OS BLOCOS CONCEITUAIS NÃO ESTÃO DELIMITADOS</h3>
+
+        <p>
+          Os parênteses ajudam a informar explicitamente à base
+          quais termos pertencem a cada conceito.
+        </p>
+
+        <p>
+          Sem o agrupamento adequado, a base utilizará suas regras
+          de precedência para decidir quais operações serão
+          realizadas primeiro.
+        </p>
+
+        <div class="project-grid">
+
+          <div class="project-box">
+            <b>VACINAÇÃO</b>
+            <p>
+              vaccination<br>
+              immunization
+            </p>
+          </div>
+
+          <div class="project-box">
+            <b>EDUCAÇÃO</b>
+            <p>
+              "health education"<br>
+              "educational intervention"
+            </p>
+          </div>
+
+          <div class="project-box">
+            <b>POPULAÇÃO</b>
+            <p>
+              child<br>
+              children
+            </p>
+          </div>
+
+        </div>
+
+        <p>
+          Sua intenção é construir três conceitos e permitir
+          alternativas dentro de cada um deles.
+        </p>
+
+        <p>
+          💡 <b>Pense:</b> como os parênteses podem mostrar quais
+          termos pertencem ao mesmo conceito?
+        </p>
+
+      </div>`;
+  }
+
+
+  /* =====================================================
+     ERRO: OR ENTRE CONCEITOS / CONEXÃO DOS BLOCOS
+     ===================================================== */
+
+  else if(!correctConnections){
+
+    explanation=`
+      <div class="feedback">
+
+        <h3>⚠️ OBSERVE A RELAÇÃO ENTRE OS CONCEITOS</h3>
+
+        <p>
+          Os termos dentro dos blocos estão organizados, mas
+          a relação entre os diferentes conceitos precisa ser revista.
+        </p>
+
+        <p>
+          Quando <b>OR</b> conecta conceitos diferentes, a busca pode
+          recuperar registros relacionados a apenas um deles.
+        </p>
+
+        <div class="paper">
+          <b>Vaccination coverage among older adults</b><br>
+          Vacinação ✓ &nbsp;
+          Educação ✗ &nbsp;
+          Crianças ✗
+        </div>
+
+        <div class="paper">
+          <b>Health education for patients with diabetes</b><br>
+          Vacinação ✗ &nbsp;
+          Educação ✓ &nbsp;
+          Crianças ✗
+        </div>
+
+        <div class="paper">
+          <b>Childhood nutrition and physical activity</b><br>
+          Vacinação ✗ &nbsp;
+          Educação ✗ &nbsp;
+          Crianças ✓
+        </div>
+
+        <p>
+          Dependendo da estratégia construída, registros como esses
+          podem ser recuperados mesmo sem reunir os três conceitos.
+        </p>
+
+        <p>
+          💡 <b>Reflita:</b> você quer trabalhos sobre qualquer um
+          desses assuntos isoladamente ou trabalhos que relacionem
+          <b>vacinação + educação + crianças</b>?
+        </p>
+
+      </div>`;
+  }
+
+
+  /* =====================================================
+     ESTRATÉGIA CORRETA
+     ===================================================== */
+
+  if(correct){
+
+    explanation=`
+      <div class="feedback good">
+
+        <h3>✓ ESTRATÉGIA LOGICAMENTE ADEQUADA</h3>
+
+        <p>
+          A ordem dos blocos e a ordem dos termos dentro de cada
+          bloco podem variar. O importante é a relação lógica
+          estabelecida entre eles.
+        </p>
+
+        <p>
+          <b>OR — alternativas dentro do conceito</b><br>
+          Permite recuperar registros que utilizem uma forma,
+          a outra ou ambas.
+        </p>
+
+        <p>
+          <b>AND — relação entre conceitos diferentes</b><br>
+          Solicita registros que relacionem os diferentes conceitos
+          da pergunta.
+        </p>
+
+        <p>
+          <b>Parênteses — agrupamento</b><br>
+          Explicitam quais termos pertencem a cada bloco conceitual.
+        </p>
+
+        <p>
+          <b>Aspas — expressões compostas</b><br>
+          Indicam que expressões como
+          <b>"health education"</b> devem ser tratadas como uma
+          unidade, conforme a sintaxe da base consultada.
+        </p>
+
+        <div class="project-box">
+
+          <b>EM LINGUAGEM COMUM, VOCÊ PEDIU À BASE:</b>
+
+          <p>
+            “Encontre registros relacionados a
+            <b>vacinação E educação E crianças</b>,
+            aceitando diferentes termos para representar
+            cada um desses conceitos.”
+          </p>
+
+        </div>
+
+        <button onclick="searchResults()">
+          VER RESULTADOS SIMULADOS →
+        </button>
+
+      </div>`;
+
+    award(15,"estratégia de busca");
+  }
+
+
+  /* =====================================================
+     EXIBE O RESULTADO
+     ===================================================== */
+
+  $("searchFeedback").innerHTML=`
+    <div class="feedback info">
+
+      <h3>🔎 RAIO-X DA ESTRATÉGIA</h3>
+
+      ${diagnostic.join("")}
+
+    </div>
+
+    ${explanation}
+  `;
 }
 function searchResults(){
  addJournal("🔎 Estratégia de busca",'(vaccination OR immunization) AND ("health education" OR "educational intervention") AND (child OR children)');
