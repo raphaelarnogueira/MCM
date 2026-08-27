@@ -72,19 +72,19 @@ function schoolFirstAnswer(a){
   $("dialog").innerHTML=`${speaker("📖","CADERNO DE CAMPO")}<div class="feedback"><b>REVEJA A DECISÃO</b><p>${fb}</p></div><button class="continue" onclick="schoolIntro()">TENTAR NOVAMENTE</button>`;return;
  }
  award(10,"escuta da comunidade");addJournal("👂 Escuta da comunidade","A ação de extensão começa pela aproximação e pelo diálogo com a comunidade, evitando pressupor previamente uma única causa ou solução.");
- schoolPeople();
+ renderSchoolPeople();
 }
 const schoolPeople={
  marina:["👩🏽‍💼","Marina • Diretora","A UBS informou que há crianças com vacinas atrasadas. Algumas famílias também procuram a escola com dúvidas.","A escola identifica uma necessidade relacionada à vacinação infantil."],
  rafael:["👨🏿‍🏫","Rafael • Professor","Alguns responsáveis dizem que não sabem se a vacinação está em dia. Outros achavam que depois dos primeiros anos só haveria vacina em campanhas.","Há dúvidas sobre calendário e situação vacinal."],
  camila:["👩🏻‍🏫","Camila • Professora","Já ouvimos relatos de falta de tempo, dúvidas sobre vacinas e também famílias que preferem não vacinar.","As situações relatadas pelas famílias são diferentes."]
 };
-function schoolPeople(){
+function renderSchoolPeople(){
  $("npcs").innerHTML=Object.entries(schoolPeople).map(([k,p])=>`<button class="npc ${state.schoolTalked[k]?"done":""}" onclick="talkSchool('${k}')">${state.schoolTalked[k]?"":'<span class="bang">!</span>'}${p[0]}<label>${p[1]}</label></button>`).join("");
  $("dialog").innerHTML=`${speaker("📋","MISSÃO")}<p>Converse com a diretora e os professores para compreender a necessidade percebida pela escola.</p>`;
 }
 function talkSchool(k){
- const p=schoolPeople[k];state.schoolTalked[k]=true;event("npc",{npc:k});addJournal("📌 "+p[1],p[3]);schoolPeople();
+ const p=schoolPeople[k];state.schoolTalked[k]=true;event("npc",{npc:k});addJournal("📌 "+p[1],p[3]);renderSchoolPeople();
  const all=Object.values(state.schoolTalked).every(Boolean);
  $("dialog").innerHTML=`${speaker(p[0],p[1].toUpperCase())}<p>“${p[2]}”</p><div class="feedback good"><b>REGISTRO</b><p>${p[3]}</p></div>${all?'<button class="continue" onclick="finishSchool()">CONCLUIR VISITA →</button>':"<p><small>Continue ouvindo os demais profissionais.</small></p>"}`;
 }
