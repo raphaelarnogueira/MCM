@@ -1,30 +1,107 @@
 const STORE="mcm_cap1_test_v1";
 let journalTab="registros";
 const defaultState={
-  xp:0, stage:"school1", events:[], journal:[], insights:[],
-  schoolTalked:{marina:false,rafael:false,camila:false},
-  ubsOrder:["ubs","objective","strategy","materials"], ubsJustification:null,
-  extensionObjective:null, extensionVerb:null, extensionSpecifics:[], extensionStrategies:[],
-  projectNeed:null, projectAudience:["children","workers"], projectMethods:{},
-  projectSequence:[], projectResources:[], projectEvaluation:{}, projectValidated:false,
-  searchTokens:[], searchAttempts:0, selectedPapers:[],
-  schoolActionTalked:{joao:false,beatriz:false,lucia:false,paulo:false},
-  actionRating:null, actionReason:null, classifications:{},
-  researchQuestion:null, projectStarted:false
-};
+  xp:0,
+  stage:"school1",
+  events:[],
+  journal:[],
+  insights:[],
 
+  schoolTalked:{
+    marina:false,
+    rafael:false,
+    camila:false
+  },
+
+  ubsOrder:[
+    "ubs",
+    "objective",
+    "strategy",
+    "materials"
+  ],
+
+  ubsJustification:null,
+
+  extensionObjective:null,
+  extensionVerb:null,
+  extensionSpecifics:[],
+  extensionStrategies:[],
+
+  projectNeed:null,
+  projectAudience:[
+    "children",
+    "workers"
+  ],
+
+  projectMethods:{},
+  projectSequence:[],
+  projectResources:[],
+  projectEvaluation:{},
+  projectValidated:false,
+
+  searchTokens:[],
+  searchAttempts:0,
+  selectedPapers:[],
+
+  schoolActionTalked:{
+    joao:false,
+    beatriz:false,
+    lucia:false,
+    paulo:false
+  },
+
+  actionRating:null,
+  actionReason:null,
+  classifications:{},
+
+  researchQuestion:null,
+  projectStarted:false,
+
+  /* =========================================
+     ACOMPANHAMENTO FORMATIVO
+     ========================================= */
+
+  feedback:{
+    necessidade:false,
+    extensaoPesquisaServico:false,
+    estrategiaBusca:false,
+    selecaoEvidencias:false,
+    objetivos:false,
+    planejamento:false,
+    avaliacao:false,
+    perguntaPesquisa:false
+  },
+
+  totalTentativas:0
+};
 let state=loadState();
 
 const $=id=>document.getElementById(id);
 
 function loadState(){
+
   try{
+
+    const saved=
+      JSON.parse(
+        localStorage.getItem(STORE)||"{}"
+      );
+
     return {
-      ...defaultState,
-      ...JSON.parse(localStorage.getItem(STORE)||"{}")
+      ...structuredClone(defaultState),
+      ...saved,
+
+      feedback:{
+        ...defaultState.feedback,
+        ...(saved.feedback || {})
+      }
     };
+
   }catch(e){
-    return structuredClone(defaultState);
+
+    return structuredClone(
+      defaultState
+    );
   }
 }
 
@@ -32,7 +109,38 @@ function save(){
   localStorage.setItem(STORE,JSON.stringify(state));
   syncXP();
 }
+/* =========================================================
+   ACOMPANHAMENTO FORMATIVO
+   ========================================================= */
 
+function registrarTentativa(){
+
+  state.totalTentativas=
+    (state.totalTentativas || 0) + 1;
+
+  save();
+}
+
+
+function registrarAtencao(dominio){
+
+  if(!state.feedback){
+    state.feedback=
+      structuredClone(
+        defaultState.feedback
+      );
+  }
+
+  if(dominio in state.feedback){
+
+    state.feedback[dominio]=true;
+
+    event(
+      "feedback_attention",
+      {domain:dominio}
+    );
+  }
+}
 function event(type,data={}){
   state.events.push({
     type,
