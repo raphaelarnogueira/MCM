@@ -66,6 +66,16 @@ header button,
     cursor:pointer;
     font-weight:bold;
 }
+#start .start-card button{
+    display:block;
+    margin:20px auto 40px auto;
+}
+
+#start .start-card small{
+    display:block;
+    margin-top:0;
+    clear:both;
+}
 
 /* Espaçamento entre botão e identificação do capítulo */
 .start-card small{
