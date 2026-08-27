@@ -92,3 +92,6 @@ header{height:66px;background:#201a13;color:#f6e1a5;border-bottom:4px solid #694
     line-height:1.4;
     color:#65513a;
 }
+.hidden-objective{
+    display:none!important;
+}
