@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MCM — Vila Aurora</title>
-<link rel="stylesheet" href="css/style.css">
+<title>MCM — Vila Aurora | Capítulo 1</title>
+<link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
 <main>
@@ -14,32 +14,52 @@
     <h1>VILA AURORA</h1>
     <p>Uma jornada pela comunidade, pela ciência e pelo cuidado.</p>
     <button onclick="startGame()">INICIAR JORNADA</button>
-    <small>Capítulo 1 • Primeiros passos na comunidade</small>
+    <small>Capítulo 1 • Da extensão à pergunta de pesquisa</small>
   </div>
 </section>
 
 <section id="map" class="screen">
   <div class="game-map">
     <img src="mapa-vila-aurora.png" alt="Mapa ilustrado de Vila Aurora">
-    <button class="hotspot school" aria-label="Ir à Escola Municipal" onclick="goSchool()"></button>
-    <button class="hotspot faculty" aria-label="Faculdade" onclick="goFaculty()"></button>
-    <button class="hotspot ubs" id="ubsBtn" aria-label="UBS Vila Aurora" onclick="goUBS()"></button>
-    <div id="lockUBS" class="lock-label">🔒</div>
-    <div class="quest-marker" id="schoolMark">!</div>
+    <button class="hotspot school" aria-label="Escola Municipal" onclick="goSchool()"></button>
+    <button class="hotspot faculty" aria-label="Faculdade e Biblioteca" onclick="goFaculty()"></button>
+    <button class="hotspot ubs" aria-label="UBS Vila Aurora" onclick="goUBS()"></button>
+    <div class="marker school-marker" id="schoolMarker">!</div>
+    <div class="marker ubs-marker hidden" id="ubsMarker">!</div>
+    <div class="marker faculty-marker hidden" id="facultyMarker">!</div>
   </div>
   <div class="overlay-top">
     <div><b>🏘️ VILA AURORA</b><small id="missionTop">Primeira atividade na comunidade</small></div>
-    <div class="top-actions"><button onclick="openJournal()">📖 Caderno</button><span>⭐ <b id="xp">0</b> XP</span></div>
+    <div class="top-actions">
+      <button onclick="openJournal()">📖 Caderno</button>
+      <button onclick="openData()">📊 Dados</button>
+      <span>⭐ <b id="xp">0</b> XP</span>
+    </div>
   </div>
-  <div class="objective"><b>🎯 Objetivo</b><span id="mapHint">Visite a Escola Municipal para conhecer a comunidade.</span></div>
+  <div class="objective"><b>🎯 Missão atual</b><span id="mapHint">Visite a Escola Municipal.</span></div>
 </section>
 
 <section id="scene" class="screen">
-  <header><button onclick="show('map')">← MAPA</button><b>🏫 ESCOLA MUNICIPAL VILA AURORA</b><span>⭐ <b class="xpMirror">0</b> XP</span></header>
-  <div class="school-room">
-    <div class="blackboard">BEM-VINDOS À<br><strong>ESCOLA VILA AURORA</strong></div>
+  <header>
+    <button onclick="show('map')">← MAPA</button>
+    <b id="sceneTitle">VILA AURORA</b>
+    <span>⭐ <b class="xpMirror">0</b> XP</span>
+  </header>
+  <div id="sceneRoom" class="room">
+    <div id="sceneBoard" class="scene-board"></div>
     <div id="npcs" class="npcs"></div>
     <div id="dialog" class="dialog"></div>
+  </div>
+</section>
+
+<section id="workspace" class="screen">
+  <header>
+    <button onclick="show('map')">← MAPA</button>
+    <b id="workTitle">OFICINA DE PROJETO</b>
+    <span>⭐ <b class="xpMirror">0</b> XP</span>
+  </header>
+  <div class="workspace">
+    <div id="workContent"></div>
   </div>
 </section>
 
@@ -47,22 +67,41 @@
  <div class="journal">
   <button class="close" onclick="closeJournal()">×</button>
   <h2>📖 CADERNO DE CAMPO</h2>
-  <p>Registros da sua jornada em Vila Aurora</p>
+  <div class="tabs">
+    <button onclick="journalTab='registros';renderJournal()">Registros</button>
+    <button onclick="journalTab='projeto';renderJournal()">Projeto</button>
+    <button onclick="journalTab='insights';renderJournal()">💡 Insights</button>
+  </div>
   <div id="journalEntries"></div>
  </div>
 </div>
 
-<section id="end" class="screen">
+<div id="dataModal" class="modal hidden">
+ <div class="journal">
+  <button class="close" onclick="closeData()">×</button>
+  <h2>📊 REGISTRO DE TESTE</h2>
+  <p>Este painel mostra o que o protótipo está registrando localmente neste navegador.</p>
+  <div id="dataSummary"></div>
+  <textarea id="dataDump" readonly></textarea>
+  <div class="row-actions">
+    <button onclick="copyData()">COPIAR JSON</button>
+    <button onclick="downloadData()">BAIXAR JSON</button>
+    <button class="danger" onclick="resetGame()">REINICIAR TESTE</button>
+  </div>
+ </div>
+</div>
+
+<section id="chapterEnd" class="screen">
  <div class="start-card">
-  <div class="kicker">MISSÃO ATUALIZADA</div>
-  <h1>UBS DESBLOQUEADA</h1>
-  <div class="hospital-icon">🏥</div>
-  <p>Você ouviu a comunidade escolar e reconheceu uma necessidade relacionada à vacinação infantil sem concluir além das informações disponíveis.</p>
-  <div class="skill"><b>🧠 ESCUTA CRÍTICA</b><small>Diferenciar o que foi relatado das explicações que ainda precisam ser investigadas.</small></div>
+  <div class="kicker">CAPÍTULO 1 CONCLUÍDO</div>
+  <h1>UMA NOVA PERGUNTA</h1>
+  <p>Você partiu de uma necessidade da comunidade, fundamentou e executou uma ação de extensão, analisou o que a prática revelou e identificou questões que podem exigir investigação sistemática.</p>
+  <div class="skill"><b>🔬 PRÓXIMO CAMINHO</b><small>Transformar uma pergunta em uma proposta de pesquisa.</small></div>
   <p>⭐ <span id="finalXp">0</span> XP</p>
-  <button onclick="returnMap()">VOLTAR À VILA</button>
+  <button onclick="openResearchStart()">INICIAR PROPOSTA DE PESQUISA</button>
+  <button class="secondary" onclick="show('map')">VOLTAR AO MAPA</button>
  </div>
 </section>
 </main>
-<script src="js/game.js"></script>
+<script src="js/game.js?v=10"></script>
 </body></html>
