@@ -386,14 +386,19 @@ function schoolFirst(){
 }
 
 function schoolFirstAnswer(a){
-
+  registrarTentativa();
   event("choice",{
     id:"ESCOLA_01",
     answer:a
   });
 
   if(a!=="C"){
-
+    if(a==="A" || a==="B"){
+      registrarAtencao("necessidade");
+    }
+    if(a==="D"){
+  registrarAtencao("extensaoPesquisa");
+}
     const fb={
 
       A:
@@ -598,11 +603,62 @@ function ubsIntro(){
       Antes de fechar a atividade, vamos organizar os próximos passos.”
     </p>
 
-    <button
-      class="continue"
-      onclick="ubsOrder()">
-      ORGANIZAR O PLANO →
-    </button>
+   <button
+  class="continue"
+  onclick="ubsJustificationStep()">
+  CONTINUAR →
+</button>
+
+function ubsJustificationStep(){
+
+  show("workspace");
+
+  $("workTitle").textContent=
+    "🏥 UBS • ARTICULAÇÃO COM O SERVIÇO";
+
+  $("workContent").innerHTML=`
+    <div class="work-card">
+
+      <h2>
+        Por que conversar com a UBS antes de fechar a proposta?
+      </h2>
+
+      <p>
+        A escola apresentou uma necessidade relacionada
+        à vacinação infantil. A UBS também acompanha
+        situações relacionadas à vacinação da comunidade.
+      </p>
+
+      <p>
+        Qual é o principal papel dessa articulação
+        neste momento?
+      </p>
+
+      <div class="answers">
+
+        ${answer(
+          "<b>A.</b> A UBS deve autorizar e definir toda atividade que será realizada na escola.",
+          "ubsWhy('A')"
+        )}
+
+        ${answer(
+          "<b>B.</b> A perspectiva do serviço pode complementar o que foi observado na escola e contribuir para o planejamento.",
+          "ubsWhy('B')"
+        )}
+
+        ${answer(
+          "<b>C.</b> Os profissionais da UBS conhecem melhor o problema e devem decidir o que a comunidade precisa.",
+          "ubsWhy('C')"
+        )}
+
+        ${answer(
+          "<b>D.</b> Os registros da UBS permitem determinar previamente as causas do atraso vacinal.",
+          "ubsWhy('D')"
+        )}
+
+      </div>
+
+    </div>
   `;
 }
 
@@ -782,6 +838,7 @@ function submitOrder(){
 
 function ubsWhy(a){
 
+  registrarTentativa();
   state.ubsJustification=a;
 
   event(
@@ -793,7 +850,9 @@ function ubsWhy(a){
   );
 
   if(a!=="B"){
-
+    
+    registrarAtencao("projetoExtensao");
+    
     $("workContent").innerHTML+=`
       <div class="work-card feedback">
 
@@ -808,9 +867,9 @@ function ubsWhy(a){
           para construir uma ação contextualizada.
         </p>
 
-        <button onclick="submitOrder()">
-          REVER JUSTIFICATIVA
-        </button>
+        <button onclick="ubsJustificationStep()">
+  REVER JUSTIFICATIVA
+</button>
 
       </div>
     `;
@@ -1318,6 +1377,7 @@ function parenthesesBalanced(tokens){
    ========================================================= */
 
 function testSearch(){
+  registrarTentativa();
 
   state.searchAttempts++;
 
@@ -1461,6 +1521,9 @@ function testSearch(){
     balanced &&
     correctConnections;
 
+if(!correct){
+  registrarAtencao("evidencias");
+}
 
   event(
     "search_attempt",
@@ -2008,6 +2071,7 @@ function togglePaper(id){
 }
 
 function finishPapers(){
+  registrarTentativa();
 
   const good=[
     "P1",
@@ -2038,8 +2102,10 @@ function finishPapers(){
       x=>good.includes(x)
     ).length;
 
-  if(score<2){
+  if(score<3){
 
+    registrarAtencao("evidencias");
+    
     alert(
       "Sua seleção tem pouca relação com a ação proposta. Revise os títulos e as descrições."
     );
@@ -2184,7 +2250,13 @@ function projectNeedStep(){
 
 function chooseProjectNeed(id){
 
+  registrarTentativa();
+
   state.projectNeed=id;
+
+  if(projectNeeds[id].type!=="identified"){
+    registrarAtencao("necessidade");
+  }
 
   event(
     "project_need_choice",
