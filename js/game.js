@@ -6999,6 +6999,108 @@ function renderResearchQuestionFeedback(){
   `;
 }
 
+function getFeedbackDomains(){
+
+  return [
+    {
+  id:"necessidade",
+  title:"Identificação da necessidade",
+  text:"Revise a diferença entre uma necessidade identificada no contexto e explicações ou hipóteses que ainda não foram demonstradas."
+},
+
+   {
+  id:"extensaoPesquisa",
+  title:"Extensão × pesquisa",
+  text:"Revise as diferenças entre extensão e pesquisa, especialmente quanto aos seus objetivos e ao tipo de conhecimento ou intervenção que cada uma produz."
+},
+    {
+  id:"evidencias",
+  title:"Busca e seleção de evidências",
+  text:"Revise como conceitos, operadores booleanos e agrupamentos são utilizados na estratégia de busca e como avaliar a pertinência dos resultados encontrados."
+},
+
+    {
+  id:"projetoExtensao",
+  title:"Construção do projeto de extensão",
+  text:"Revise a relação entre necessidade, objetivos, público e métodos, buscando coerência e factibilidade no planejamento da ação."
+},
+
+    {
+  id:"perguntaPesquisa",
+  title:"Da prática à pergunta de pesquisa",
+  text:"Revise como uma questão surgida na prática pode ser delimitada e transformada em uma pergunta investigável."
+}
+  ];
+
+}
+
+function renderFinalFeedback(){
+
+  const domains=
+    getFeedbackDomains();
+
+  const attention=
+    domains.filter(
+      domain=>
+        state.feedback &&
+        state.feedback[domain.id]===true
+    );
+
+  if(attention.length===0){
+
+    $("finalFeedback").innerHTML=`
+      <div class="feedback good">
+
+        <h3>
+          🌟 PERCURSO SEM PONTOS DE ATENÇÃO IDENTIFICADOS
+        </h3>
+
+        <p>
+          Você concluiu as decisões avaliadas neste capítulo
+          sem selecionar alternativas associadas aos pontos
+          de atenção analisados.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+  $("finalFeedback").innerHTML=`
+    <div class="feedback">
+
+      <h3>
+        📌 PONTOS DE ATENÇÃO PARA SEGUIR APRENDENDO
+      </h3>
+
+      <p>
+        Durante o percurso, algumas decisões indicaram
+        conteúdos que merecem ser retomados:
+      </p>
+      ${
+        attention.map(
+          domain=>`
+            <div class="project-box">
+
+              <b>
+                ${domain.title}
+              </b>
+
+              <p>
+                ${domain.text}
+              </p>
+
+            </div>
+          `
+        ).join("")
+      }
+        
+
+    </div>
+  `;
+}
+
+
 
 function finishChapter(){
 
@@ -7042,6 +7144,8 @@ function finishChapter(){
 
   $("finalXp").textContent=
     state.xp;
+    
+renderFinalFeedback();
 
   show("chapterEnd");
 }
