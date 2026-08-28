@@ -26,6 +26,7 @@ const defaultState={
   extensionVerb:null,
   objectiveVerbOrder:[],
   extensionSpecifics:[],
+  specificObjectivesOrder:[],
   extensionStrategies:[],
 
   projectNeed:null,
@@ -86,11 +87,11 @@ function loadState(){
       );
 
     return {
-      ...structuredClone(defaultState),
+      ...structuredClone(),
       ...saved,
 
       feedback:{
-        ...defaultState.feedback,
+        ....feedback,
         ...(saved.feedback || {})
       }
     };
@@ -98,7 +99,7 @@ function loadState(){
   }catch(e){
 
     return structuredClone(
-      defaultState
+      
     );
   }
 }
@@ -153,7 +154,7 @@ function registrarAtencao(dominio){
   if(!state.feedback){
     state.feedback=
       structuredClone(
-        defaultState.feedback
+        .feedback
       );
   }
 
