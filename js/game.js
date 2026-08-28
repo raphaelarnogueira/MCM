@@ -28,6 +28,7 @@ const defaultState={
   extensionStrategies:[],
 
   projectNeed:null,
+  projectNeedOrder:[],
   projectAudience:[
     "children",
     "workers"
@@ -105,6 +106,34 @@ function save(){
   localStorage.setItem(STORE,JSON.stringify(state));
   syncXP();
 }
+
+function shuffleArray(items){
+
+  const shuffled=[...items];
+
+  for(
+    let i=shuffled.length-1;
+    i>0;
+    i--
+  ){
+
+    const j=
+      Math.floor(
+        Math.random()*(i+1)
+      );
+
+    [
+      shuffled[i],
+      shuffled[j]
+    ]=[
+      shuffled[j],
+      shuffled[i]
+    ];
+  }
+
+  return shuffled;
+}
+
 /* =========================================================
    ACOMPANHAMENTO FORMATIVO
    ========================================================= */
@@ -2184,6 +2213,18 @@ const projectNeeds={
 
 function projectNeedStep(){
 
+  if(
+    !state.projectNeedOrder ||
+    state.projectNeedOrder.length===0
+  ){
+    state.projectNeedOrder=
+      shuffleArray(
+        Object.keys(projectNeeds)
+      );
+
+    save();
+  }
+  
   show("workspace");
 
   $("workTitle").textContent=
@@ -2220,8 +2261,12 @@ function projectNeedStep(){
       <div class="answers">
 
         ${
-          Object.entries(projectNeeds)
-            .map(([id,item])=>`
+          state.projectNeedOrder
+  .map(id=>{
+
+    const item=projectNeeds[id];
+
+    return `
 
               <button
                 class="answer ${
@@ -2236,7 +2281,8 @@ function projectNeedStep(){
 
               </button>
 
-            `).join("")
+                       `;
+          }).join("")
         }
 
       </div>
