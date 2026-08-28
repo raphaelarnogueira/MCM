@@ -2437,6 +2437,8 @@ function projectAudienceStep(){
 
 function chooseAudience(a){
 
+registrarTentativa();
+
   event(
     "choice",
     {
@@ -2446,6 +2448,8 @@ function chooseAudience(a){
   );
 
   if(a!=="A"){
+
+registrarAtencao("projetoExtensao");
 
     const feedback={
 
@@ -2708,7 +2712,20 @@ function objectiveVerbStep(){
 
 function selectObjectiveVerb(id){
 
+  registrarTentativa();
+  
   state.extensionVerb=id;
+
+  if(objectiveVerbs[id].status==="research"){
+    registrarAtencao("extensaoPesquisa");
+  }
+
+if(
+  objectiveVerbs[id].status==="monitoring" ||
+  objectiveVerbs[id].status==="outcome"
+){
+  registrarAtencao("projetoExtensao");
+}
 
   event(
     "objective_verb",
@@ -2980,7 +2997,24 @@ function generalObjectiveStep(){
 
 function chooseGeneralObjective(id){
 
+registrarTentativa();
+
   state.extensionObjective=id;
+
+    if(generalObjectiveComplements[id].status==="research"){
+    registrarAtencao("extensaoPesquisa");
+  }
+
+if(
+  generalObjectiveComplements[id].status==="service" ||
+  generalObjectiveComplements[id].status==="outcome"
+){
+  registrarAtencao("projetoExtensao");
+}
+
+if(generalObjectiveComplements[id].status==="assumption"){
+  registrarAtencao("necessidade");
+}
 
   event(
     "general_objective_choice",
@@ -3357,6 +3391,8 @@ function toggleSpecificObjective(id){
 
 function checkSpecificObjectives(){
 
+registrarTentativa();
+
   if(
     state.extensionSpecifics.length===0
   ){
@@ -3382,6 +3418,24 @@ function checkSpecificObjectives(){
     selected.filter(
       x=>x.category!=="extension"
     );
+
+if(
+  selected.some(
+    x=>x.category==="research"
+  )
+){
+  registrarAtencao("extensaoPesquisa");
+}
+
+if(
+  selected.some(
+    x=>
+      x.category==="service" ||
+      x.category==="audience"
+  )
+){
+  registrarAtencao("projetoExtensao");
+}
 
   event(
     "specific_objectives_submit",
@@ -4147,12 +4201,18 @@ function selectMethod(
   index
 ){
 
+  registrarTentativa();
+  
   state.projectMethods[objectiveId]=[
     methodId
   ];
 
   const method=
     getMethodById(methodId);
+
+if(!method.valid){
+  registrarAtencao("projetoExtensao");
+}
 
   event(
     "method_choice",
@@ -4600,6 +4660,8 @@ function moveProjectSequence(i,d){
 
 function checkProjectSequence(){
 
+  registrarTentativa();
+
   const seq=
     state.projectSequence;
 
@@ -4629,6 +4691,8 @@ function checkProjectSequence(){
     !openingOK ||
     !evaluationOK
   ){
+
+      registrarAtencao("projetoExtensao");
 
     let message="";
 
@@ -4933,6 +4997,8 @@ function toggleProjectResource(resource){
 
 function checkProjectResources(){
 
+  registrarTentativa();
+  
   const required=
     getRequiredResources();
 
@@ -4975,6 +5041,8 @@ function checkProjectResources(){
     missing.length ||
     inappropriate.length
   ){
+
+      registrarAtencao("projetoExtensao");
 
     let content="";
 
@@ -5452,6 +5520,8 @@ function toggleProjectEvaluation(id){
 
 function checkProjectEvaluation(){
 
+  registrarTentativa();
+
   const selected=
     Object.keys(
       state.projectEvaluation||{}
@@ -5485,6 +5555,8 @@ function checkProjectEvaluation(){
   );
 
   if(invalid.length){
+
+      registrarAtencao("projetoExtensao");
 
     $("evaluationFeedback").innerHTML=`
       <div class="feedback">
@@ -6581,6 +6653,8 @@ function classifyInsight(
   index
 ){
 
+  registrarTentativa();
+
   const item=
     classificationItems[id];
 
@@ -6588,6 +6662,10 @@ function classifyInsight(
 
   const correct=
     choice===item.correct;
+
+    if(!correct){
+  registrarAtencao("extensaoPesquisa");
+}
 
   event(
     "classification",
@@ -6854,7 +6932,13 @@ function researchChoice(){
 
 function chooseResearchQuestion(id){
 
+  registrarTentativa();
+
   state.researchQuestion=id;
+
+if(!researchQuestions[id].valid){
+  registrarAtencao("perguntaPesquisa");
+}
 
   event(
     "research_question_choice",
