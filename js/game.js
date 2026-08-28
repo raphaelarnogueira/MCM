@@ -62,18 +62,14 @@ const defaultState={
      ========================================= */
 
   feedback:{
-    necessidade:false,
-    extensaoPesquisaServico:false,
-    estrategiaBusca:false,
-    selecaoEvidencias:false,
-    objetivos:false,
-    planejamento:false,
-    avaliacao:false,
-    perguntaPesquisa:false
-  },
+  necessidade:false,
+  extensaoPesquisa:false,
+  evidencias:false,
+  projetoExtensao:false,
+  perguntaPesquisa:false
+},
 
-  totalTentativas:0
-};
+totalTentativas:0};
 let state=loadState();
 
 const $=id=>document.getElementById(id);
