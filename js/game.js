@@ -608,6 +608,8 @@ function ubsIntro(){
   onclick="ubsJustificationStep()">
   CONTINUAR →
 </button>
+  `;
+}
 
 function ubsJustificationStep(){
 
