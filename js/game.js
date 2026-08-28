@@ -24,6 +24,7 @@ const defaultState={
 
   extensionObjective:null,
   extensionVerb:null,
+  objectiveVerbOrder:[],
   extensionSpecifics:[],
   extensionStrategies:[],
 
@@ -2670,6 +2671,18 @@ const objectiveVerbs={
 
 function objectiveVerbStep(){
 
+  if(
+    !state.objectiveVerbOrder ||
+    state.objectiveVerbOrder.length===0
+  ){
+    state.objectiveVerbOrder=
+      shuffleArray(
+        Object.keys(objectiveVerbs)
+      );
+
+    save();
+  }
+  
   show("workspace");
 
   $("workTitle").textContent=
@@ -2721,8 +2734,12 @@ function objectiveVerbStep(){
       <div class="answers">
 
         ${
-          Object.entries(objectiveVerbs)
-            .map(([id,v])=>`
+   state.objectiveVerbOrder
+  .map(id=>{
+
+    const v=objectiveVerbs[id];
+
+    return `
 
               <button
                 class="answer ${
@@ -2744,7 +2761,8 @@ function objectiveVerbStep(){
 
               </button>
 
-            `).join("")
+                       `;
+          }).join("")
         }
 
       </div>
