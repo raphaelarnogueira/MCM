@@ -100,9 +100,7 @@ function loadState(){
 
   }catch(e){
 
-    return structuredClone(
-      
-    );
+    return structuredClone(defaultState);
   }
 }
 
