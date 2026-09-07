@@ -37,8 +37,10 @@ const defaultState={
   ],
 
   projectMethods:{},
+  methodOrders:{},
   projectSequence:[],
   projectResources:[],
+  projectResourcesOrder:[],
   projectEvaluation:{},
   projectValidated:false,
 
@@ -2215,17 +2217,27 @@ const projectNeeds={
 
 function projectNeedStep(){
 
-  if(
-    !state.projectNeedOrder ||
-    state.projectNeedOrder.length===0
-  ){
-    state.projectNeedOrder=
-      shuffleArray(
-        Object.keys(projectNeeds)
-      );
+  const projectNeedIds=
+  Object.keys(projectNeeds);
 
-    save();
-  }
+const projectNeedOrderIsValid=
+  Array.isArray(
+    state.projectNeedOrder
+  ) &&
+  state.projectNeedOrder.length===
+    projectNeedIds.length &&
+  projectNeedIds.every(
+    id=>
+      state.projectNeedOrder.includes(id)
+  );
+
+if(!projectNeedOrderIsValid){
+
+  state.projectNeedOrder=
+    shuffleArray(projectNeedIds);
+
+  save();
+}
   
   show("workspace");
 
@@ -2672,17 +2684,27 @@ const objectiveVerbs={
 
 function objectiveVerbStep(){
 
-  if(
-    !state.objectiveVerbOrder ||
-    state.objectiveVerbOrder.length===0
-  ){
-    state.objectiveVerbOrder=
-      shuffleArray(
-        Object.keys(objectiveVerbs)
-      );
+  const objectiveVerbIds=
+  Object.keys(objectiveVerbs);
 
-    save();
-  }
+const objectiveVerbOrderIsValid=
+  Array.isArray(
+    state.objectiveVerbOrder
+  ) &&
+  state.objectiveVerbOrder.length===
+    objectiveVerbIds.length &&
+  objectiveVerbIds.every(
+    id=>
+      state.objectiveVerbOrder.includes(id)
+  );
+
+if(!objectiveVerbOrderIsValid){
+
+  state.objectiveVerbOrder=
+    shuffleArray(objectiveVerbIds);
+
+  save();
+}
   
   show("workspace");
 
@@ -3331,6 +3353,28 @@ const specificObjectives={
 
 function specificObjectivesStep(){
 
+  const specificObjectiveIds=
+  Object.keys(specificObjectives);
+
+const specificObjectivesOrderIsValid=
+  Array.isArray(
+    state.specificObjectivesOrder
+  ) &&
+  state.specificObjectivesOrder.length===
+    specificObjectiveIds.length &&
+  specificObjectiveIds.every(
+    id=>
+      state.specificObjectivesOrder.includes(id)
+  );
+
+if(!specificObjectivesOrderIsValid){
+
+  state.specificObjectivesOrder=
+    shuffleArray(specificObjectiveIds);
+
+  save();
+}
+  
   show("workspace");
 
   $("workTitle").textContent=
@@ -3374,8 +3418,12 @@ function specificObjectivesStep(){
       <div class="answers">
 
         ${
-          Object.entries(specificObjectives)
-            .map(([id,item])=>`
+          state.specificObjectivesOrder
+  .map(id=>{
+
+    const item=specificObjectives[id];
+
+    return `
 
               <button
                 class="answer ${
@@ -3397,7 +3445,8 @@ function specificObjectivesStep(){
 
               </button>
 
-            `).join("")
+                       `;
+          }).join("")
         }
 
       </div>
@@ -4156,6 +4205,27 @@ function methodObjectiveStep(index){
   const options=
     methodOptions[objectiveId];
 
+  const methodIds=
+  options.map(m=>m.id);
+
+const methodOrderIsValid=
+  Array.isArray(
+    state.methodOrders[objectiveId]
+  ) &&
+  state.methodOrders[objectiveId].length===
+    methodIds.length &&
+  methodIds.every(
+    id=>
+      state.methodOrders[objectiveId].includes(id)
+  );
+
+if(!methodOrderIsValid){
+
+  state.methodOrders[objectiveId]=
+    shuffleArray(methodIds);
+
+  save();
+}  
   const selected=
     state.projectMethods[objectiveId]
     ||[];
@@ -4201,7 +4271,13 @@ function methodObjectiveStep(index){
       <div class="answers">
 
         ${
-          options.map((m,i)=>`
+        state.methodOrders[objectiveId]
+  .map((methodId,i)=>{
+    const m=options.find(
+      item=>item.id===methodId
+    );
+
+    return `
 
             <button
               class="answer ${
@@ -4235,7 +4311,8 @@ function methodObjectiveStep(index){
 
             </button>
 
-          `).join("")
+          `;
+  }).join("")
         }
 
       </div>
@@ -4537,9 +4614,20 @@ function prepareSequence(){
 
   if(!sameItems){
 
-    state.projectSequence=
-      desired.slice();
+    let shuffled=
+  shuffleArray(desired);
 
+while(
+  shuffled[0]==="opening" &&
+  shuffled[shuffled.length-1]==="evaluation"
+){
+  shuffled=
+    shuffleArray(desired);
+}
+
+state.projectSequence=
+  shuffled;
+    
     save();
   }
 
@@ -4968,6 +5056,23 @@ function resourcesStep(){
       array.indexOf(x)===i
   );
 
+  const resourcesOrderIsValid=
+  Array.isArray(state.projectResourcesOrder) &&
+  state.projectResourcesOrder.length===
+    optionalResources.length &&
+  optionalResources.every(
+    resource=>
+      state.projectResourcesOrder.includes(resource)
+  );
+
+if(!resourcesOrderIsValid){
+
+  state.projectResourcesOrder=
+    shuffleArray(optionalResources);
+
+  save();
+}
+
   $("workContent").innerHTML=`
     <div class="work-card">
 
@@ -4993,8 +5098,8 @@ function resourcesStep(){
       <div class="answers">
 
         ${
-          optionalResources.map(
-            resource=>`
+          state.projectResourcesOrder.map(
+  resource=>`
 
               <button
                 class="answer ${
