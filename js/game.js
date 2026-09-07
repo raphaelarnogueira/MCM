@@ -154,8 +154,8 @@ function registrarAtencao(dominio){
   if(!state.feedback){
     state.feedback=
       structuredClone(
-        .feedback
-      );
+  defaultState.feedback
+);
   }
 
   if(dominio in state.feedback){
