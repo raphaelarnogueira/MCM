@@ -3417,7 +3417,7 @@ if(!specificObjectivesOrderIsValid){
 
         ${
           state.specificObjectivesOrder
-  .map(id=>{
+ .map((id,i)=>{
 
     const item=specificObjectives[id];
 
@@ -3437,7 +3437,7 @@ if(!specificObjectivesOrderIsValid){
                     :"☐"
                 }
 
-                <b>${id.replace("OE","")}.</b>
+                <b>${i+1}.</b>
 
                 ${item.text}
 
