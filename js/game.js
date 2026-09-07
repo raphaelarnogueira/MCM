@@ -89,11 +89,11 @@ function loadState(){
       );
 
     return {
-      ...structuredClone(),
+      ...structuredClone(defaultState),
       ...saved,
 
       feedback:{
-        ....feedback,
+        ...defaultState.feedback,
         ...(saved.feedback || {})
       }
     };
